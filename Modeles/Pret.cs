@@ -8,12 +8,12 @@ namespace Modeles
 {
     public class Pret
     {
-        private int id { get; set; }
-        private Membre membre { get; set; }
-        private Livre livre { get; set; }
-        private DateTime ddebut { get; set; }
-        private DateTime dfin { get; set; }
-        private DateTime drendue { get; set; }
+        public int id { get; set; }
+        public Membre membre { get; set; }
+        public Livre livre { get; set; }
+        public DateTime ddebut { get; set; }
+        public DateTime dfin { get; set; }
+        public DateTime drendue { get; set; }
 
     }
 }

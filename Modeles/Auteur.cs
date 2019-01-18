@@ -8,7 +8,7 @@ namespace Modeles
 {
     public class Auteur
     {
-        private int id { get; set; }
-        private string nom { get; set; }
+        public int id { get; set; }
+        public string nom { get; set; }
     }
 }
