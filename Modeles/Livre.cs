@@ -8,11 +8,11 @@ namespace Modeles
 {
     public class Livre
     {
-        private int id { get; set; }
-        private string titre { get; set; }
-        private string description { get; set; }
-        private DateTime dapparution { get; set; }
-        private Auteur auteur { get; set; }
-        private Categorie categorie { get; set; }
+        public int id { get; set; }
+        public string titre { get; set; }
+        public string description { get; set; }
+        public String dapparution { get; set; }
+        public Auteur auteur { get; set; }
+        public Categorie categorie { get; set; }
     }
 }

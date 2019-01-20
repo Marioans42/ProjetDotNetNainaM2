@@ -8,7 +8,7 @@ namespace Modeles
 {
     public class Categorie
     {
-        private int id { get; set; }
-        private string libelle { get; set; }
+        public int id { get; set; }
+        public string libelle { get; set; }
     }
 }

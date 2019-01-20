@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{11CBFDB4-9A10-4ABD-960B-6697CE78B0FC}</ProjectGuid>
+    <ProjectGuid>{01C718B3-BD3F-4F5E-974B-C53071D565CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Modeles</RootNamespace>
-    <AssemblyName>Modeles</AssemblyName>
+    <RootNamespace>Services</RootNamespace>
+    <AssemblyName>Services</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -48,18 +48,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auteur.cs" />
-    <Compile Include="Categorie.cs" />
-    <Compile Include="Livre.cs" />
-    <Compile Include="Membre.cs" />
-    <Compile Include="Pret.cs" />
+    <Compile Include="Migrations\201901191953389_CreationModeles.cs" />
+    <Compile Include="Migrations\201901191953389_CreationModeles.Designer.cs">
+      <DependentUpon>201901191953389_CreationModeles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901192136219_CreationModeles1.cs" />
+    <Compile Include="Migrations\201901192136219_CreationModeles1.Designer.cs">
+      <DependentUpon>201901192136219_CreationModeles1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="ProjetContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\LivreService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Modeles\Modeles.csproj">
+      <Project>{11cbfdb4-9a10-4abd-960b-6697ce78b0fc}</Project>
+      <Name>Modeles</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201901191953389_CreationModeles.resx">
+      <DependentUpon>201901191953389_CreationModeles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901192136219_CreationModeles1.resx">
+      <DependentUpon>201901192136219_CreationModeles1.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
