@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modeles", "Modeles\Modeles.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{01C718B3-BD3F-4F5E-974B-C53071D565CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackOffice", "BackOffice\BackOffice.csproj", "{D9202C31-6A7F-478B-A43E-9C22A862FC26}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{8A6B5D38-B1C5-4DCE-A6EC-2ECA403038A9}"
 EndProject
 Global
@@ -23,6 +25,10 @@ Global
 		{01C718B3-BD3F-4F5E-974B-C53071D565CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01C718B3-BD3F-4F5E-974B-C53071D565CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01C718B3-BD3F-4F5E-974B-C53071D565CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9202C31-6A7F-478B-A43E-9C22A862FC26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9202C31-6A7F-478B-A43E-9C22A862FC26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9202C31-6A7F-478B-A43E-9C22A862FC26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9202C31-6A7F-478B-A43E-9C22A862FC26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A6B5D38-B1C5-4DCE-A6EC-2ECA403038A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8A6B5D38-B1C5-4DCE-A6EC-2ECA403038A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A6B5D38-B1C5-4DCE-A6EC-2ECA403038A9}.Release|Any CPU.ActiveCfg = Release|Any CPU

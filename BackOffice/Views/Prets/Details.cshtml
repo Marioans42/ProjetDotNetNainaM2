@@ -1,0 +1,59 @@
+﻿@model Modeles.Pret
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Pret</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Livre.Titre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Livre.Titre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Membre.Nom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Membre.Nom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Ddebut)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ddebut)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Dfin)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Dfin)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Dretour)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Dretour)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.PretID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

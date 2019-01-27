@@ -14,6 +14,14 @@ namespace Services
         public DbSet<Categorie> Categories { get; set; }
         public DbSet<Auteur> Auteurs { get; set; }
         public DbSet<Membre> Membres { get; set; }
-        public DbSet<Pret> Pret { get; set; }
+        public DbSet<Pret> Prets { get; set; }
+        public DbSet<Utilisateur> Utilisateurs { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            //Database.SetInitializer<ProjetContext>(new DropCreateDatabaseIfModelChanges<ProjetContext>());
+            Database.SetInitializer<ProjetContext>(null);
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
