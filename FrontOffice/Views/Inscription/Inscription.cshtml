@@ -1,0 +1,74 @@
+﻿@model FrontOffice.ViewModels.InscriptionVueModele
+
+@{
+    ViewBag.Title = "Inscription";
+}
+
+<div class="card" style="margin: 2% auto; float: none; width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title center">Inscription</h4>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Membre.Nom, htmlAttributes: new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.EditorFor(model => model.Membre.Nom, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Membre.Nom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Membre.Prenom, htmlAttributes: new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.EditorFor(model => model.Membre.Prenom, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Membre.Prenom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Membre.Dnaiss, htmlAttributes: new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.EditorFor(model => model.Membre.Dnaiss, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Membre.Dnaiss, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Membre.Email, htmlAttributes: new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.TextBoxFor(model => model.Membre.Email, new { @class = "form-control", type = "email" })
+                    @Html.ValidationMessageFor(model => model.Membre.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Membre.Mdp, new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.TextBoxFor(model => model.Membre.Mdp, new { @class = "form-control", type = "password" })
+                    @Html.ValidationMessageFor(model => model.Membre.Mdp, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Mdp2, htmlAttributes: new { @class = "control-label col-lg-12" })
+                <div class="col-lg-12">
+                    @Html.TextBoxFor(model => model.Mdp2, new { @class = "form-control", type = "password" })
+                    @Html.ValidationMessageFor(model => model.Mdp2, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-lg-12">
+                    <input type="submit" value="Valider" class="btn btn-primary" style="width: 100%;" />
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
