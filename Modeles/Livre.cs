@@ -24,6 +24,8 @@ namespace Modeles
         public int CategorieID { get; set; }
         public virtual Categorie Categorie { get; set; }
 
+        public Livre() { }
+
         public virtual ICollection<Pret> Prets { get; set; }
     }
 }

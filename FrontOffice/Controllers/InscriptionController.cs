@@ -4,17 +4,23 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Security.Cryptography;
-using Services;
-using Services.Service;
 using Modeles;
 using FrontOffice.ViewModels;
+using Repositories;
+using Services.Service;
 using FrontOffice.Utils;
 
 namespace FrontOffice.Controllers
 {
     public class InscriptionController : Controller
     {
-        ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private MembreService membreService;
+
+        public InscriptionController()
+        {
+            this.membreService = new MembreService(context);
+        }
 
         // GET: Inscription/Inscription
         public ActionResult Inscription()
@@ -30,9 +36,7 @@ namespace FrontOffice.Controllers
             {
                 if (inscriptionVueModele.Membre.Mdp == inscriptionVueModele.Mdp2)
                 {
-                    var membres = MembreService.FindAll(db).Where(u => u.Email.Equals(inscriptionVueModele.Membre.Email));
-
-                    if (membres.Count() == 0)
+                    if (membreService.CheckForDuplicatedEmail(inscriptionVueModele.Membre.Email))
                     {
                         string mdp = Hashage.Sha256(inscriptionVueModele.Membre.Mdp);
                         var membre = new Membre()
@@ -44,8 +48,8 @@ namespace FrontOffice.Controllers
                             Mdp = mdp
                         };
 
-                        MembreService.Add(membre, db);
-                        db.SaveChanges();
+                        membreService.InsertMembre(membre);
+                        membreService.Save();
                         return Redirect("/Login/Login");
                     }
                 }

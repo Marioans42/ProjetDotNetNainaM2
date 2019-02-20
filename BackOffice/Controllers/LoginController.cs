@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Services;
-using Modeles;
 using System.Web.Security;
+using Modeles;
+using Repositories;
 using Services.Service;
 using BackOffice.Utils;
 
@@ -13,7 +13,13 @@ namespace BackOffice.Controllers
 {
     public class LoginController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private UtilisateurService utilisateurService;
+
+        public LoginController()
+        {
+            this.utilisateurService = new UtilisateurService(context);
+        }
 
         // GET: Login
         public ActionResult Login()
@@ -26,7 +32,8 @@ namespace BackOffice.Controllers
         {
             if (!String.IsNullOrEmpty(utilisateur.Email) && !String.IsNullOrEmpty(utilisateur.Mdp))
             {
-                if (IsValid(utilisateur))
+                utilisateur.Mdp = Hashage.Sha256(utilisateur.Mdp);
+                if (utilisateurService.IsValidLogin(utilisateur))
                 {
                     FormsAuthentication.SetAuthCookie(utilisateur.Email, false);
                     if (!String.IsNullOrEmpty(ReturnUrl))
@@ -45,13 +52,6 @@ namespace BackOffice.Controllers
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Login");
-        }
-
-        private Boolean IsValid(Utilisateur utilisateur)
-        {
-            var mdp = Hashage.Sha256(utilisateur.Mdp);
-            var utilisateurs = UtilisateurService.FindAll(db).Where(u => u.Email.Equals(utilisateur.Email) && u.Mdp.Equals(mdp));
-            return (utilisateurs.Count() == 1);
         }
     }
 }

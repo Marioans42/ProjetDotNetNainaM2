@@ -13,6 +13,8 @@ namespace Modeles
         [Required(ErrorMessage = "Veuillez donner un nom.")]
         public string Nom { get; set; }
 
+        public Auteur() { }
+
         public virtual ICollection<Livre> Livres { get; set; }
     }
 }

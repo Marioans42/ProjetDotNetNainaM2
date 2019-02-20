@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Modeles;
-using Services;
+using Repositories;
 using Services.Service;
 
 namespace BackOffice.Controllers
@@ -15,22 +15,24 @@ namespace BackOffice.Controllers
     [Authorize]
     public class MembresController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private MembreService membreService;
+
+        public MembresController()
+        {
+            this.membreService = new MembreService(this.context);
+        }
 
         // GET: Membres
         public ActionResult Index()
         {
-            return View(MembreService.FindAll(db));
+            return View(membreService.GetMembres());
         }
 
         // GET: Membres/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Membre membre = MembreService.Find(id, db);
+            Membre membre = membreService.GetMembreByID(id);
             if (membre == null)
             {
                 return HttpNotFound();
@@ -53,8 +55,8 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                MembreService.Add(membre, db);
-                db.SaveChanges();
+                membreService.InsertMembre(membre);
+                membreService.Save();
                 return RedirectToAction("Index");
             }
 
@@ -62,13 +64,9 @@ namespace BackOffice.Controllers
         }
 
         // GET: Membres/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Membre membre = MembreService.Find(id, db);
+            Membre membre = membreService.GetMembreByID(id);
             if (membre == null)
             {
                 return HttpNotFound();
@@ -85,21 +83,17 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                MembreService.Update(membre, db);
-                db.SaveChanges();
+                membreService.UpdateMembre(membre);
+                //membreService.Save();
                 return RedirectToAction("Index");
             }
             return View(membre);
         }
 
         // GET: Membres/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Membre membre = MembreService.Find(id, db);
+            Membre membre = membreService.GetMembreByID(id);
             if (membre == null)
             {
                 return HttpNotFound();
@@ -112,19 +106,8 @@ namespace BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Membre membre = MembreService.Find(id, db);
-            MembreService.Remove(membre, db);
-            db.SaveChanges();
+            membreService.DeleteMembre(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

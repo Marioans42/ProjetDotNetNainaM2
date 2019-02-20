@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using PagedList;
 using Modeles;
-using Services;
+using Repositories;
 using Services.Service;
 
 namespace BackOffice.Controllers
@@ -16,14 +16,20 @@ namespace BackOffice.Controllers
     [Authorize]
     public class LivresController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private LivreService livreService;
+
+        public LivresController()
+        {
+            this.livreService = new LivreService(context);
+        }
 
         // GET: Livres
         public ActionResult Index(string sortOrder, string rechercheString, int? page)
         {
             ViewBag.recherche = rechercheString;
             ViewBag.sortOrder = sortOrder;
-            var livres = from s in LivreService.FindAll(db) select s;
+            var livres = livreService.GetLivres();
 
             if(!String.IsNullOrEmpty(rechercheString))
             {
@@ -56,13 +62,9 @@ namespace BackOffice.Controllers
         }
 
         // GET: Livres/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Livre livre = LivreService.Find(id, db);
+            Livre livre = livreService.GetLivreByID(id);
             if (livre == null)
             {
                 return HttpNotFound();
@@ -73,8 +75,8 @@ namespace BackOffice.Controllers
         // GET: Livres/Create
         public ActionResult Create()
         {
-            ViewBag.AuteurID = new SelectList(db.Auteurs, "AuteurID", "Nom");
-            ViewBag.CategorieID = new SelectList(db.Categories, "CategorieID", "Libelle");
+            ViewBag.AuteurID = new SelectList(context.Auteurs, "AuteurID", "Nom");
+            ViewBag.CategorieID = new SelectList(context.Categories, "CategorieID", "Libelle");
             return View();
         }
 
@@ -87,30 +89,26 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                LivreService.Add(livre, db);
-                db.SaveChanges();
+                livreService.InsertLivre(livre);
+                livreService.Save();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.AuteurID = new SelectList(db.Auteurs, "AuteurID", "Nom", livre.AuteurID);
-            ViewBag.CategorieID = new SelectList(db.Categories, "CategorieID", "Libelle", livre.CategorieID);
+            ViewBag.AuteurID = new SelectList(context.Auteurs, "AuteurID", "Nom", livre.AuteurID);
+            ViewBag.CategorieID = new SelectList(context.Categories, "CategorieID", "Libelle", livre.CategorieID);
             return View(livre);
         }
 
         // GET: Livres/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Livre livre = LivreService.Find(id, db);
+            Livre livre = livreService.GetLivreByID(id);
             if (livre == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.AuteurID = new SelectList(db.Auteurs, "AuteurID", "Nom", livre.AuteurID);
-            ViewBag.CategorieID = new SelectList(db.Categories, "CategorieID", "Libelle", livre.CategorieID);
+            ViewBag.AuteurID = new SelectList(context.Auteurs, "AuteurID", "Nom", livre.AuteurID);
+            ViewBag.CategorieID = new SelectList(context.Categories, "CategorieID", "Libelle", livre.CategorieID);
             return View(livre);
         }
 
@@ -123,23 +121,19 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                LivreService.Update(livre, db);
-                db.SaveChanges();
+                livreService.UpdateLivre(livre);
+                //livreService.Save();
                 return RedirectToAction("Index");
             }
-            ViewBag.AuteurID = new SelectList(db.Auteurs, "AuteurID", "Nom", livre.AuteurID);
-            ViewBag.CategorieID = new SelectList(db.Categories, "CategorieID", "Libelle", livre.CategorieID);
+            ViewBag.AuteurID = new SelectList(context.Auteurs, "AuteurID", "Nom", livre.AuteurID);
+            ViewBag.CategorieID = new SelectList(context.Categories, "CategorieID", "Libelle", livre.CategorieID);
             return View(livre);
         }
 
         // GET: Livres/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Livre livre = LivreService.Find(id, db);
+            Livre livre = livreService.GetLivreByID(id);
             if (livre == null)
             {
                 return HttpNotFound();
@@ -152,19 +146,8 @@ namespace BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Livre livre = LivreService.Find(id, db);
-            LivreService.Remove(livre, db);
-            db.SaveChanges();
+            livreService.DeleteLivre(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

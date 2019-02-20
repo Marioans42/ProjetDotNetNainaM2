@@ -5,79 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
 using Modeles;
+using Repositories;
+using Repositories.DAL;
 
 namespace Services.Service
 {
-    public class UtilisateurService
+    public class UtilisateurService : UtilisateurRepository
     {
-        public static void Add(Utilisateur utilisateur)
+        public UtilisateurService(ProjetContext context) : base(context)
         {
-            using (var context = new ProjetContext())
-            {
-                context.Utilisateurs.Add(utilisateur);
-                context.SaveChanges();
-            }
+        
         }
 
-        public static void Add(Utilisateur utilisateur, ProjetContext context)
+        public Boolean CheckForDuplicatedEmail(string email)
         {
-            context.Utilisateurs.Add(utilisateur);
+            var utilisateurs = this.GetUtilisateurs().Where(u => u.Email.Equals(email));
+            return utilisateurs.Count() == 0;
         }
 
-        public static void Update(Utilisateur utilisateur)
+        public Boolean IsValidLogin(Utilisateur utilisateur)
         {
-            using (var context = new ProjetContext())
-            {
-                context.Utilisateurs.AddOrUpdate(utilisateur);
-                context.SaveChanges();
-            }
-        }
-
-        public static void Update(Utilisateur utilisateur, ProjetContext context)
-        {
-            context.Utilisateurs.AddOrUpdate(utilisateur);
-        }
-
-        public static void Remove(Utilisateur utilisateur)
-        {
-            using (var context = new ProjetContext())
-            {
-                context.Utilisateurs.Remove(utilisateur);
-                context.SaveChanges();
-            }
-        }
-
-        public static void Remove(Utilisateur utilisateur, ProjetContext context)
-        {
-            context.Utilisateurs.Remove(utilisateur);
-        }
-
-        public static Utilisateur Find(int? id)
-        {
-            using (var context = new ProjetContext())
-            {
-                var utilisateur = context.Utilisateurs.FirstOrDefault(a => a.UtilisateurID == id);
-                return utilisateur;
-            }
-        }
-
-        public static Utilisateur Find(int? id, ProjetContext context)
-        {
-            var utilisateur = context.Utilisateurs.FirstOrDefault(a => a.UtilisateurID == id);
-            return utilisateur;
-        }
-
-        public static IEnumerable<Utilisateur> FindAll()
-        {
-            using (var context = new ProjetContext())
-            {
-                return context.Utilisateurs.ToList();
-            }
-        }
-
-        public static IEnumerable<Utilisateur> FindAll(ProjetContext context)
-        {
-            return context.Utilisateurs.ToList();
+            var utilisateurs = this.GetUtilisateurs().Where(u => u.Email.Equals(utilisateur.Email) && u.Mdp.Equals(utilisateur.Mdp));
+            return (utilisateurs.Count() == 1);
         }
     }
 }

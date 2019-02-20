@@ -13,6 +13,8 @@ namespace Modeles
         [Required(ErrorMessage = "Veuillez donner un libellé")]
         public string Libelle { get; set; }
 
+        public Categorie() { }
+
         public ICollection<Livre> Livres { get; set; }
     }
 }

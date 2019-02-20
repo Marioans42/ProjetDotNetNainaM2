@@ -1,0 +1,75 @@
+﻿@model PagedList.IPagedList<Modeles.Livre>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="margin-top: 2%;">
+    <h2>Livres</h2>
+</div>
+
+<hr />
+
+<form action="/Livres/Index" method="GET">
+    <div class="form-group row">
+        <input class="form-control mr-sm-2" type="text" name="titre" value="@ViewBag.titre" placeholder="Titre">
+        <input class="form-control mr-sm-2" type="text" name="auteur" value="@ViewBag.auteur" placeholder="Auteur">
+        <input class="form-control mr-sm-2" type="text" name="categorie" value="@ViewBag.categorie" placeholder="Catégorie">
+        <input type="hidden" name="sortOrder" value="@ViewBag.sortOrder" />
+        <input type="hidden" name="page" value="1" />
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Rechercher</button>
+    </div>
+</form>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Titre", "Index", new { sortOrder = "Titre", titre = @ViewBag.titre, auteur = @ViewBag.auteur, categorie = @ViewBag.categorie })
+        </th>
+        <th>
+            @Html.ActionLink("Auteur", "Index", new { sortOrder = "Auteur.Nom", titre = @ViewBag.titre, auteur = @ViewBag.auteur, categorie = @ViewBag.categorie })
+        </th>
+        <th>
+            @Html.ActionLink("Catégorie", "Index", new { sortOrder = "Categorie.Libelle", titre = @ViewBag.titre, auteur = @ViewBag.auteur, categorie = @ViewBag.categorie })
+        </th>
+        <th>
+            @Html.ActionLink("Date d'apparution", "Index", new { sortOrder = "Dapparution", titre = @ViewBag.titre, auteur = @ViewBag.auteur, categorie = @ViewBag.categorie })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a href="/Livres/Details/@item.LivreID">
+                    @Html.DisplayFor(modelItem => item.Titre)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Auteur.Nom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Categorie.Libelle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Dapparution)
+            </td>
+            <td>
+                <form action="/Prets/Create" method="post">
+                    <input type="hidden" name="livreID" value="@item.LivreID" />
+                    <button type="submit" class="btn btn-link">Faire un prêt</button>
+                </form>
+            </td>
+        </tr>
+     }
+
+</table>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.sortOrder, titre = ViewBag.titre, auteur = ViewBag.auteur, categorie = ViewBag.categorie }))

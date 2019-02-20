@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Modeles;
-using Services;
+using Repositories;
 using Services.Service;
 
 namespace BackOffice.Controllers
@@ -15,22 +14,23 @@ namespace BackOffice.Controllers
     [Authorize]
     public class CategoriesController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private CategorieService categorieService;
+
+        public CategoriesController()
+        {
+            this.categorieService = new CategorieService(new ProjetContext());
+        }
 
         // GET: Categories
         public ActionResult Index()
         {
-            return View(CategorieService.FindAll(db));
+            return View(categorieService.GetCategories());
         }
 
         // GET: Categories/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Categorie categorie = CategorieService.Find(id, db);
+            Categorie categorie = categorieService.GetCategorieByID(id);
             if (categorie == null)
             {
                 return HttpNotFound();
@@ -53,8 +53,8 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                CategorieService.Add(categorie, db);
-                db.SaveChanges();
+                categorieService.InsertCategorie(categorie);
+                categorieService.Save();
                 return RedirectToAction("Index");
             }
 
@@ -62,13 +62,9 @@ namespace BackOffice.Controllers
         }
 
         // GET: Categories/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Categorie categorie = CategorieService.Find(id, db);
+            Categorie categorie = categorieService.GetCategorieByID(id);
             if (categorie == null)
             {
                 return HttpNotFound();
@@ -85,21 +81,17 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                CategorieService.Update(categorie, db);
-                db.SaveChanges();
+                categorieService.UpdateCategorie(categorie);
+                //categorieService.Save();
                 return RedirectToAction("Index");
             }
             return View(categorie);
         }
 
         // GET: Categories/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Categorie categorie = CategorieService.Find(id, db);
+            Categorie categorie = categorieService.GetCategorieByID(id);
             if (categorie == null)
             {
                 return HttpNotFound();
@@ -112,19 +104,8 @@ namespace BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Categorie categorie = CategorieService.Find(id, db);
-            CategorieService.Remove(categorie, db);
-            db.SaveChanges();
+            categorieService.DeleteCategorie(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -6,15 +6,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Security.Cryptography;
-using Services;
-using Services.Service;
 using Modeles;
+using Repositories;
+using Services.Service;
 
 namespace BackOffice.Controllers
 {
     public class InscriptionController : Controller
     {
-        ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private UtilisateurService utilisateurService;
+
+        public InscriptionController()
+        {
+            this.utilisateurService = new UtilisateurService(context);
+        }
 
         // GET: Inscription/Inscription
         public ActionResult Inscription()
@@ -30,9 +36,7 @@ namespace BackOffice.Controllers
             {
                 if (inscriptionVueModele.Utilisateur.Mdp == inscriptionVueModele.Mdp2)
                 {
-                    var utilisateurs = UtilisateurService.FindAll(db).Where(u => u.Email.Equals(inscriptionVueModele.Utilisateur.Email));
-
-                    if (utilisateurs.Count() == 0)
+                    if (utilisateurService.CheckForDuplicatedEmail(inscriptionVueModele.Utilisateur.Email))
                     {
                         string mdp = Hashage.Sha256(inscriptionVueModele.Utilisateur.Mdp);
                         var utilisateur = new Utilisateur()
@@ -43,8 +47,8 @@ namespace BackOffice.Controllers
                             Mdp = mdp
                         };
 
-                        UtilisateurService.Add(utilisateur, db);
-                        db.SaveChanges();
+                        utilisateurService.InsertUtilisateur(utilisateur);
+                        utilisateurService.Save();
                         return Redirect("/Login/Login");
                     }
                 }

@@ -23,7 +23,7 @@ namespace Modeles
 
         [DataType(DataType.Date)]
         [Display(Name = "Date retour")]
-        public DateTime Dretour { get; set; }
+        public DateTime? Dretour { get; set; }
 
         [Display(Name = "Membre")]
         public int MembreID { get; set; }

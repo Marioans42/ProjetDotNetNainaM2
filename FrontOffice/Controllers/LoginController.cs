@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Services;
-using Services.Service;
-using Modeles;
 using System.Web.Security;
+using Modeles;
+using Repositories;
+using Services.Service;
 using FrontOffice.Utils;
 
 namespace FrontOffice.Controllers
 {
     public class LoginController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private MembreService membreService;
+
+        public LoginController()
+        {
+            this.membreService = new MembreService(context);
+        }
 
         // GET: Login
         public ActionResult Login()
@@ -26,9 +32,17 @@ namespace FrontOffice.Controllers
         {
             if (!String.IsNullOrEmpty(membre.Email) && !String.IsNullOrEmpty(membre.Mdp))
             {
-                if (IsValid(membre))
+                membre.Mdp = Hashage.Sha256(membre.Mdp);
+                if (membreService.IsValidLogin(membre))
                 {
-                    FormsAuthentication.SetAuthCookie(membre.Email, false);
+                    var mdp = Hashage.Sha256(membre.Mdp);
+                    membre = membreService.GetMembres().Where(u => u.Email.Equals(membre.Email) && u.Mdp.Equals(membre.Mdp)).First();
+
+                    var cookie = Hashage.Sha256(membre.Email);
+                    FormsAuthentication.SetAuthCookie(cookie, false);
+
+                    Session["userID"] = membre.MembreID;
+
                     if (!String.IsNullOrEmpty(ReturnUrl))
                     {
                         return Redirect(ReturnUrl);
@@ -45,13 +59,6 @@ namespace FrontOffice.Controllers
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Login");
-        }
-
-        private Boolean IsValid(Membre membre)
-        {
-            var mdp = Hashage.Sha256(membre.Mdp);
-            var membres = MembreService.FindAll(db).Where(u => u.Email.Equals(membre.Email) && u.Mdp.Equals(mdp));
-            return (membres.Count() == 1);
         }
     }
 }

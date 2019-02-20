@@ -5,79 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
 using Modeles;
+using Repositories;
+using Repositories.DAL;
 
 namespace Services.Service
 {
-    public class MembreService
+    public class MembreService : MembreRepository
     {
-        public static void Add(Membre membre)
+        public MembreService(ProjetContext context) : base(context)
         {
-            using (var context = new ProjetContext())
-            {
-                context.Membres.Add(membre);
-                context.SaveChanges();
-            }
+        
         }
 
-        public static void Add(Membre membre, ProjetContext context)
+        public Boolean CheckForDuplicatedEmail(string email)
         {
-            context.Membres.Add(membre);
+            var membres = this.GetMembres().Where(u => u.Email.Equals(email));
+            return membres.Count() == 0;
         }
 
-        public static void Update(Membre membre)
+        public Boolean IsValidLogin(Membre membre)
         {
-            using (var context = new ProjetContext())
-            {
-                context.Membres.AddOrUpdate(membre);
-                context.SaveChanges();
-            }
-        }
-
-        public static void Update(Membre membre, ProjetContext context)
-        {
-            context.Membres.AddOrUpdate(membre);
-        }
-
-        public static void Remove(Membre membre)
-        {
-            using (var context = new ProjetContext())
-            {
-                context.Membres.Remove(membre);
-                context.SaveChanges();
-            }
-        }
-
-        public static void Remove(Membre membre, ProjetContext context)
-        {
-            context.Membres.Remove(membre);
-        }
-
-        public static Membre Find(int? id)
-        {
-            using (var context = new ProjetContext())
-            {
-                var membre = context.Membres.FirstOrDefault(a => a.MembreID == id);
-                return membre;
-            }
-        }
-
-        public static Membre Find(int? id, ProjetContext context)
-        {
-            var membre = context.Membres.FirstOrDefault(a => a.MembreID == id);
-            return membre;
-        }
-
-        public static IEnumerable<Membre> FindAll()
-        {
-            using (var context = new ProjetContext())
-            {
-                return context.Membres.ToList();
-            }
-        }
-
-        public static IEnumerable<Membre> FindAll(ProjetContext context)
-        {
-            return context.Membres.ToList();
+            var membres = this.GetMembres().Where(u => u.Email.Equals(membre.Email) && u.Mdp.Equals(membre.Mdp));
+            return (membres.Count() == 1);
         }
     }
 }

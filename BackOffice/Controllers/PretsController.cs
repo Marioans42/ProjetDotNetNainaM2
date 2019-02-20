@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Modeles;
-using Services;
+using Repositories;
 using Services.Service;
 
 namespace BackOffice.Controllers
@@ -15,22 +15,24 @@ namespace BackOffice.Controllers
     [Authorize]
     public class PretsController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private ProjetContext context = new ProjetContext();
+        private PretService pretService;
+
+        public PretsController()
+        {
+            this.pretService = new PretService(this.context);
+        }
 
         // GET: Prets
         public ActionResult Index()
         {
-            return View(PretService.FindAll(db));
+            return View(pretService.GetPrets());
         }
 
         // GET: Prets/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pret pret = PretService.Find(id, db);
+            Pret pret = pretService.GetPretByID(id);
             if (pret == null)
             {
                 return HttpNotFound();
@@ -41,8 +43,8 @@ namespace BackOffice.Controllers
         // GET: Prets/Create
         public ActionResult Create()
         {
-            ViewBag.LivreID = new SelectList(db.Livres, "LivreID", "Titre");
-            ViewBag.MembreID = new SelectList(db.Membres, "MembreID", "Nom");
+            ViewBag.LivreID = new SelectList(context.Livres, "LivreID", "Titre");
+            ViewBag.MembreID = new SelectList(context.Membres, "MembreID", "Nom");
             return View();
         }
 
@@ -55,30 +57,26 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                PretService.Add(pret, db);
-                db.SaveChanges();
+                pretService.InsertPret(pret);
+                pretService.Save();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.LivreID = new SelectList(db.Livres, "LivreID", "Titre", pret.LivreID);
-            ViewBag.MembreID = new SelectList(db.Membres, "MembreID", "Nom", pret.MembreID);
+            ViewBag.LivreID = new SelectList(context.Livres, "LivreID", "Titre", pret.LivreID);
+            ViewBag.MembreID = new SelectList(context.Membres, "MembreID", "Nom", pret.MembreID);
             return View(pret);
         }
 
         // GET: Prets/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pret pret = PretService.Find(id, db);
+            Pret pret = pretService.GetPretByID(id);
             if (pret == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.LivreID = new SelectList(db.Livres, "LivreID", "Titre", pret.LivreID);
-            ViewBag.MembreID = new SelectList(db.Membres, "MembreID", "Nom", pret.MembreID);
+            ViewBag.LivreID = new SelectList(context.Livres, "LivreID", "Titre", pret.LivreID);
+            ViewBag.MembreID = new SelectList(context.Membres, "MembreID", "Nom", pret.MembreID);
             return View(pret);
         }
 
@@ -91,23 +89,19 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                PretService.Update(pret, db);
-                db.SaveChanges();
+                pretService.UpdatePret(pret);
+                //pretService.Save();
                 return RedirectToAction("Index");
             }
-            ViewBag.LivreID = new SelectList(db.Livres, "LivreID", "Titre", pret.LivreID);
-            ViewBag.MembreID = new SelectList(db.Membres, "MembreID", "Nom", pret.MembreID);
+            ViewBag.LivreID = new SelectList(context.Livres, "LivreID", "Titre", pret.LivreID);
+            ViewBag.MembreID = new SelectList(context.Membres, "MembreID", "Nom", pret.MembreID);
             return View(pret);
         }
 
         // GET: Prets/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pret pret = PretService.Find(id, db);
+            Pret pret = pretService.GetPretByID(id);
             if (pret == null)
             {
                 return HttpNotFound();
@@ -120,9 +114,7 @@ namespace BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Pret pret = PretService.Find(id, db);
-            PretService.Remove(pret);
-            db.SaveChanges();
+            pretService.DeletePret(id);
             return RedirectToAction("Index");
         }
 
@@ -130,7 +122,7 @@ namespace BackOffice.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                context.Dispose();
             }
             base.Dispose(disposing);
         }

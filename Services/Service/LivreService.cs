@@ -5,79 +5,61 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
 using Modeles;
+using Repositories;
+using Repositories.DAL;
 
 namespace Services.Service
 {
-    public class LivreService
+    public class LivreService : LivreRepository
     {
-        public static void Add(Livre livre)
+        public LivreService(ProjetContext context) : base(context)
         {
-            using (var context = new ProjetContext())
+
+        }
+
+        public IEnumerable<Livre> FindBySearch(Dictionary<string, string> values, string orderBy)
+        {
+            var livres = this.GetLivres();
+            foreach(var v in values)
             {
-                context.Livres.Add(livre);
-                context.SaveChanges();
+                livres = livres.Where(
+                    l => CheckResearch(l, v.Key.ToString()).StartsWith(v.Value.ToString().ToLower())
+                );
+            }
+
+            livres = livres.OrderBy(l => OrderBy(l, orderBy));
+
+            return livres;
+        }
+
+        private string CheckResearch(Livre livre, string key)
+        {
+            string[] columns = key.Split('.');
+
+            if (columns.Length > 1)
+            {
+                var field = livre.GetType().GetProperty(columns[0]).GetValue(livre);
+                return field.GetType().GetProperty(columns[1]).GetValue(field).ToString().ToLower();
+            }
+            else
+            {
+                return livre.GetType().GetProperty(columns[0]).GetValue(livre).ToString().ToLower();
             }
         }
 
-        public static void Add(Livre livre, ProjetContext context)
+        private string OrderBy(Livre livre, string column)
         {
-            context.Livres.Add(livre);
-        }
+            string[] orders = column.Split('.');
 
-        public static void Update(Livre livre)
-        {
-            using (var context = new ProjetContext())
+            if (orders.Length > 1)
             {
-                context.Livres.AddOrUpdate(livre);
-                context.SaveChanges();
+                var field = livre.GetType().GetProperty(orders[0]).GetValue(livre);
+                return field.GetType().GetProperty(orders[1]).GetValue(field).ToString().ToLower();
             }
-        }
-
-        public static void Update(Livre livre, ProjetContext context)
-        {
-            context.Livres.AddOrUpdate(livre);
-        }
-
-        public static void Remove(Livre livre)
-        {
-            using (var context = new ProjetContext())
+            else
             {
-                context.Livres.Remove(livre);
-                context.SaveChanges();
+                return livre.GetType().GetProperty(orders[0]).GetValue(livre).ToString().ToLower();
             }
-        }
-
-        public static void Remove(Livre livre, ProjetContext context)
-        {
-            context.Livres.Remove(livre);
-        }
-
-        public static Livre Find(int? id)
-        {
-            using (var context = new ProjetContext())
-            {
-                var livre = context.Livres.FirstOrDefault(a => a.LivreID == id);
-                return livre;
-            }
-        }
-
-        public static Livre Find(int? id, ProjetContext context)
-        {
-            var livre = context.Livres.FirstOrDefault(a => a.LivreID == id);
-            return livre;
-        }
-
-        public static IEnumerable<Livre> FindAll()
-        {
-            using (var context = new ProjetContext())
-            {
-                return context.Livres.ToList();
-            }
-        }
-
-        public static IEnumerable<Livre> FindAll(ProjetContext context)
-        {
-            return context.Livres.ToList();
         }
     }
 }

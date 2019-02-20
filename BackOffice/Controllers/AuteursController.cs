@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Modeles;
-using Services;
+using Repositories;
 using Services.Service;
 
 namespace BackOffice.Controllers
@@ -15,22 +14,23 @@ namespace BackOffice.Controllers
     [Authorize]
     public class AuteursController : Controller
     {
-        private ProjetContext db = new ProjetContext();
+        private AuteurService auteurService;
+
+        public AuteursController()
+        {
+            this.auteurService = new AuteurService(new ProjetContext());
+        }
 
         // GET: Auteurs
         public ActionResult Index()
         {
-            return View(AuteurService.FindAll(db));
+            return View(auteurService.GetAuteurs());
         }
 
         // GET: Auteurs/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Auteur auteur = AuteurService.Find(id, db);
+            Auteur auteur = auteurService.GetAuteurByID(id);
             if (auteur == null)
             {
                 return HttpNotFound();
@@ -53,8 +53,8 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                AuteurService.Add(auteur, db);
-                db.SaveChanges();
+                auteurService.InsertAuteur(auteur);
+                auteurService.Save();
                 return RedirectToAction("Index");
             }
 
@@ -62,13 +62,9 @@ namespace BackOffice.Controllers
         }
 
         // GET: Auteurs/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Auteur auteur = AuteurService.Find(id, db);
+            Auteur auteur = auteurService.GetAuteurByID(id);
             if (auteur == null)
             {
                 return HttpNotFound();
@@ -85,21 +81,17 @@ namespace BackOffice.Controllers
         {
             if (ModelState.IsValid)
             {
-                AuteurService.Update(auteur, db);
-                db.SaveChanges();
+                auteurService.UpdateAuteur(auteur);
+                //auteurService.Save();
                 return RedirectToAction("Index");
             }
             return View(auteur);
         }
 
         // GET: Auteurs/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Auteur auteur = AuteurService.Find(id, db);
+            Auteur auteur = auteurService.GetAuteurByID(id);
             if (auteur == null)
             {
                 return HttpNotFound();
@@ -112,19 +104,8 @@ namespace BackOffice.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Auteur auteur = AuteurService.Find(id, db);
-            AuteurService.Remove(auteur, db);
-            db.SaveChanges();
+            auteurService.DeleteAuteur(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
